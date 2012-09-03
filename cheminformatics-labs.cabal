@@ -1,0 +1,12 @@
+Name:                cheminformatics-labs
+Version:             0.0
+Description:         Super cool mega labs
+License:             GPL
+License-file:        LICENSE
+Author:              Petr Kuderov
+Maintainer:          pkuderov@gmail.com
+Build-Type:          Simple
+Cabal-Version:       >=1.2
+Executable haq
+  Main-is:           Main.hs
+  Build-depends:     base >= 3 && < 5
