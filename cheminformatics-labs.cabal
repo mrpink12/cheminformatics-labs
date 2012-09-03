@@ -7,6 +7,6 @@ Author:              Petr Kuderov
 Maintainer:          pkuderov@gmail.com
 Build-Type:          Simple
 Cabal-Version:       >=1.2
-Executable haq
-  Main-is:           Main.hs
+Executable chemlabs
+  Main-is:           src/Main.hs
   Build-depends:     base >= 3 && < 5
