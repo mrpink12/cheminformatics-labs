@@ -1,7 +1,14 @@
 import System.Environment
+import LabsIntro
+import SeqAlign
+import Mol2Visualizer
  
 -- | 'main' runs the main program
 main :: IO ()
-main = getArgs >>= print . haqify . head
+main = do
+    mol2Main
+--    labsIntro
+--    labSequenceAlignment
+--    getArgs >>= print . haqify . head
  
 haqify s = "Haq! " ++ s
