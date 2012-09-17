@@ -14,5 +14,4 @@ Executable chemlabs
     Build-depends:      base >= 3 && < 5, random -any, haskell98 -any, OpenGL, GLUT
     Main-is:            Main.hs
     Buildable:          True
-    Hs-source-dirs:     src, src/SeqAlign, src/Mol2
-    Other-modules:      LabsIntro SeqAlign Garbage Mol2Visualizer
+    Hs-source-dirs:     src, src/SeqAlign, src/Mol2, src/GLStuff

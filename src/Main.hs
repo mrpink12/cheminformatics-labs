@@ -9,6 +9,3 @@ main = do
     mol2Main
 --    labsIntro
 --    labSequenceAlignment
---    getArgs >>= print . haqify . head
- 
-haqify s = "Haq! " ++ s

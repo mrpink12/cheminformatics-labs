@@ -15,6 +15,7 @@
 module Mol2Parser (
     Point3(..), Atom(..),
     Bond(..), Molecule(..),
+    Header(..),
     readMol2, writeMol2, putMol2
 ) where
 
