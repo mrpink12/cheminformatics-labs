@@ -38,6 +38,7 @@ mol2Main = do
         let 
                 (mol:mols) = readMol2 cont
         renderMolecule mol
+        return ()
         
 renderMolecule m @ (Molecule (Header molName _ _) atoms bonds) = do
         initialDisplayMode $= [DoubleBuffered, RGBMode, WithDepthBuffer]
