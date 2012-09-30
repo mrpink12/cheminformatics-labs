@@ -1,7 +1,7 @@
 Cheminformatics labs
 ==============
 
-IU9 5th degree, 2nd term. Professor: Dubanov Alexander Vyacheslavovich
+BMSTU IU9 5th degree, 2nd term. Professor: Dubanov Alexander Vyacheslavovich
 --------------
 
 Parts:
