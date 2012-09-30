@@ -1,14 +1,20 @@
-Will become a heading
+Cheminformatics labs
 ==============
 
-Will become a sub heading
+IU9 5th degree, 2nd term. Professor: Dubanov Alexander Vyacheslavovich
 --------------
+
+Parts:
+- Intro to haskell language. Simple lab to dive into language. Consists of 4 less parts (DONE)
+- Reading/writing *.mol2 files (DONE)
+- Simple ascetic visualisation of molecules. Inputs are given from mol2 molecules bases. Use previous lab for reading files (DONE +/-)
+- Superimpostion of structures/molecules by RMSD(root mean square distance).
+- Structure fitting. The area is been available for solvent. The system ligand - target
+- Genom sequences alignment (DONE)
+
+
 
 *This will be Italic*
 
 **This will be Bold**
-
-- This will be a list item
-- This will be a list item
-
     Add a indent and this will end up as code
