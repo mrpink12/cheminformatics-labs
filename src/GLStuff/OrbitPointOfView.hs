@@ -22,13 +22,13 @@ calculatePointOfView alp bet r =
         z = u * sin beta
     in (x, y, z)
 
-keyForPos pPos (Char '+') = modPos pPos (id, id, \x -> x - 0.1)
-keyForPos pPos (Char '-') = modPos pPos (id, id, (+) 0.1)
-keyForPos pPos (SpecialKey KeyLeft) = modPos pPos (id, (+)359, id)
-keyForPos pPos (SpecialKey KeyRight)= modPos pPos (id, (+)1, id)
-keyForPos pPos (SpecialKey KeyUp) = modPos pPos ((+)359, id, id)
-keyForPos pPos (SpecialKey KeyDown) = modPos pPos ((+)1, id, id)
-keyForPos _ _ = return ()
+keyForPos pPos (Char '+') rate = modPos pPos (id, id, \x -> x - fromIntegral(rate) * 0.1)
+keyForPos pPos (Char '-') rate = modPos pPos (id, id, (+) (fromIntegral(rate) * 0.1))
+keyForPos pPos (SpecialKey KeyLeft) rate = modPos pPos (id, (+) (360 - rate), id)
+keyForPos pPos (SpecialKey KeyRight) rate = modPos pPos (id, (+) rate, id)
+keyForPos pPos (SpecialKey KeyUp) rate = modPos pPos ((+) (360 - rate), id, id)
+keyForPos pPos (SpecialKey KeyDown) rate = modPos pPos ((+) rate, id, id)
+keyForPos _ _ _ = return ()
 
 modPos pPos (ffst,fsnd,ftrd) = do
     (alpha,beta,r) <- get pPos
