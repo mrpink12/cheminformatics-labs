@@ -16,7 +16,7 @@ module Geometry where
 
 import Mol2Parser;
 
-data Axys = Ox | Oy | Oz
+data Axys = Ox | Oy | Oz deriving Eq
 
 ----------------TRANSLATE------------------
 translateMol (Molecule h atoms bonds) p =
