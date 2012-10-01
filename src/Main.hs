@@ -15,6 +15,7 @@ main = do
                 "seqal" -> testSequenceAlignment
                 "mol2"  -> testMol2Parser args
                 "vis"   -> testVisualizer args
+                "sup"   -> testSuperimposition args
 
 testLabsIntro = do
         labsIntro
@@ -30,9 +31,7 @@ testVisualizer (input:_) = do
         mols <- getMol2 input
         renderMolecules mols
         
-testSuperimposition (in1:in2:out:_) = do
+testSuperimposition (in1:in2:args) = do
         (m1:_) <- getMol2 in1
         (m2:_) <- getMol2 in2
-        let
-                m = superimpose m1 m2
-        putMol2 out (m:[])
+        superimpose m1 m2 args

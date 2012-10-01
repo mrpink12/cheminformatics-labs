@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------
 
 module Mol2Visualizer (
-    renderMolecules
+    renderMolecules, keyboard
 ) where
 
 import GHC.Float
