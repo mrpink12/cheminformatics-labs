@@ -27,8 +27,8 @@ testMol2Parser (input:output:_) = do
         putMol2 output mols
         
 testVisualizer (input:_) = do
-        (m:_) <- getMol2 input
-        renderMolecule m
+        mols <- getMol2 input
+        renderMolecules mols
         
 testSuperimposition (in1:in2:out:_) = do
         (m1:_) <- getMol2 in1

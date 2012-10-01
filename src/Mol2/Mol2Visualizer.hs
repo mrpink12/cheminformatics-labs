@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------
 
 module Mol2Visualizer (
-    renderMolecule
+    renderMolecules
 ) where
 
 import GHC.Float
@@ -32,30 +32,37 @@ import Data.List
 import Geometry
 
         
-renderMolecule m @ (Molecule (Header molName _ _) atoms bonds) = do
+
+renderMolecules mols = do
         initialDisplayMode $= [DoubleBuffered, RGBMode, WithDepthBuffer]
         (progName,_) <- getArgsAndInitialize
-        createWindow molName
+        createWindow (foldr (++) [] [name | (Molecule (Header name _ _) _ _) <- mols]) 
         depthFunc $= Just Less
 
         pPos <- newIORef (0::Int, 90::Int, 2.0)
         vType <- newIORef (2::Int)
-        displayCallback $= display vType pPos atoms bonds
+        displayCallback $= display vType pPos mols
         keyboardMouseCallback $= Just (keyboard vType pPos)
 
         reshapeCallback $= Just reshape
         mainLoop
-       
-display vType pPos atoms bonds = do
+        
+display vType pPos mols = do
         clearColor $= Color4 0 0 0 1
         clear [ColorBuffer, DepthBuffer]
         loadIdentity
         setPointOfView pPos        
         x <- get vType
         if x == 1 
-                then do mapM_ (\atom -> renderAtom atom) atoms
-                else do mapM_ (\bond -> renderBond bond atoms) bonds
+                then do mapM_ (\mol -> displayMolCPK mol) mols
+                else do mapM_ (\mol -> displayMolSkeleton mol) mols
         swapBuffers
+        
+displayMolCPK (Molecule _ atoms _) = do
+        mapM_ (\atom -> renderAtom atom) atoms
+        
+displayMolSkeleton (Molecule _ atoms bonds) = do
+        mapM_ (\bond -> renderBond bond atoms) bonds
 
 keyboard vType pPos (Char '1') _ _ _ = do
         vType $= 1        
@@ -93,19 +100,6 @@ renderBondPart a@(Atom _ _ atomType p@(Point3 x y z) _) direction = preservingMa
 findAtom' id atoms = atoms !! (id - 1)
 
 toVector3 (Point3 x y z) = Vector3 x y z
-
-vdwRadius atomType
-    | atomType == "H"  = 1.20
-    | atomType == "F"  = 1.47
-    | atomType == "Cl" = 1.75
-    | atomType == "Br" = 1.85
-    | atomType == "I"  = 1.98
-    | isPrefixOf "C." atomType = 1.70
-    | isPrefixOf "N." atomType = 1.55
-    | isPrefixOf "O." atomType = 1.52
-    | isPrefixOf "S." atomType = 1.80
-    | isPrefixOf "P." atomType = 1.80
-    | otherwise = 2.0
 
 atomColor4 atomType
     | atomType == "H"  = Color4 1 1 1 1 -- white

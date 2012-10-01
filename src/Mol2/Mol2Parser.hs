@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Mol2
+-- Module      :  Mol2Parser
 -- Copyright   :
 -- License     :  AllRightsReserved
 --
@@ -16,10 +16,12 @@ module Mol2Parser (
     Point3(..), Atom(..),
     Bond(..), Molecule(..),
     Header(..),
-    readMol2, getMol2, writeMol2, putMol2
+    readMol2, getMol2, writeMol2, putMol2,
+    vdwRadius
 ) where
 
 import System.IO
+import Data.List
 
 directory = "data/"
 extension = ".mol2"
@@ -142,3 +144,18 @@ filterLines (l : ls) x
     | x == 0    = l : filterLines ls x
     | x == 1    = filterLines ls x
 filterLines [] _ = []
+
+----------------------------MOL2 Settings-------------------------
+
+vdwRadius atomType
+    | atomType == "H"  = 1.20
+    | atomType == "F"  = 1.47
+    | atomType == "Cl" = 1.75
+    | atomType == "Br" = 1.85
+    | atomType == "I"  = 1.98
+    | isPrefixOf "C." atomType = 1.70
+    | isPrefixOf "N." atomType = 1.55
+    | isPrefixOf "O." atomType = 1.52
+    | isPrefixOf "S." atomType = 1.80
+    | isPrefixOf "P." atomType = 1.80
+    | otherwise = 2.0

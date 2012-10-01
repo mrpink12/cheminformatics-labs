@@ -18,25 +18,6 @@ import Mol2Parser;
 
 data Axys = Ox | Oy | Oz
 
-------------Some test methods--------------
---pointsFromMol (Molecule _ atoms _) = pointsFromAtoms atoms
---
---pointsFromAtoms [] = []
---pointsFromAtoms ((Atom _ :as) =
-
-----------------CENTROID-------------------
-centroid weightFunc pSet = centroid' weightFunc pSet c 0 where
-   c = Point3 0.0 0.0 0.0
-
-centroid' wf [] c w = c
-centroid' wf (p:ps) c w = centroid' wf ps nc (w + 1) where
-    pw = wf p
-    alpha = w / (w + pw)
-    nc = c <+> ((p <-> c) <<*> alpha)
-
-weight::String->Float
-weight atomName = 1.0
-
 ----------------TRANSLATE------------------
 translateMol (Molecule h atoms bonds) p =
     Molecule h (translateAtoms atoms p) bonds
