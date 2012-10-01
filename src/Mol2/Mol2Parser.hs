@@ -16,10 +16,15 @@ module Mol2Parser (
     Point3(..), Atom(..),
     Bond(..), Molecule(..),
     Header(..),
-    readMol2, writeMol2, putMol2
+    readMol2, getMol2, writeMol2, putMol2
 ) where
 
 import System.IO
+
+directory = "data/"
+extension = ".mol2"
+inputFile = "data/histidine.mol2"
+--outputFile = "data/aspirin_out.mol2"
 
 sTest = "a.ar 1.335 -1.323 D D D A B C D"
 
@@ -32,17 +37,18 @@ data Atom = Atom {atomId :: Int, atomName, atomType :: String, point :: Point3, 
 data Bond = Bond {bondId, idX, idY :: Int, bondType :: String} deriving Show
 data Molecule = Molecule {molHeader :: Header, atoms :: [Atom], bonds :: [Bond]} deriving Show
 
---WRITE MOLECULES TO STRING
-putMol2 outputFilePath mols = do
-    ofHandle <- openFile outputFilePath WriteMode
-    hPrint' ofHandle mols
+--WRITE MOLECULES TO FILE OR STRING
+putMol2 fileName mols = do
+    ofHandle <- openFile (directory ++ fileName ++ extension) WriteMode
+    mapM_ (\m -> mapM_ (hPutStrLn ofHandle) (writeMol2 m)) mols
+    --hPrint' ofHandle mols
     hFlush ofHandle
     hClose ofHandle
 
-hPrint' hOut [] = return ()
-hPrint' hOut (m:ms) = do
-    sequence $ map (hPutStrLn hOut) (writeMol2 m)
-    hPrint' hOut ms
+-- hPrint' hOut [] = return ()
+-- hPrint' hOut (m:ms) = do
+    -- sequence $ map (hPutStrLn hOut) (writeMol2 m)
+    -- hPrint' hOut ms
 
 writeMol2 (m @ (Molecule h as bs)) = map ($ []) mol where
     mol = (showsHeader m) ++ (showsAtoms as) ++ (showsBonds bs)
@@ -55,7 +61,7 @@ showsHeader (Molecule (Header molName molSize chargeType) atoms bonds) =
 showsAtoms as = (showString "@<TRIPOS>ATOM") : (showsAtomsBody as)
 showsAtomsBody ((Atom atomId atomName atomType point charge) : as) =
     a : showsAtomsBody as where
-        a = (shows atomId).(' ':).(showString atomName).(' ':).(showsPoint3 point).(' ':).(shows charge)
+        a = (shows atomId).(' ':).(showString atomName).(' ':).(showsPoint3 point).(' ':).(showString atomType).(' ':).(shows charge)
 showsAtomsBody [] = []
 
 showsBonds bs = (showString "@<TRIPOS>BOND") : (showsBondsBody bs)
@@ -66,7 +72,12 @@ showsBondsBody [] = []
 
 showsPoint3 (Point3 px py pz) = (shows px).(' ':).(shows py).(' ':).(shows pz)
 
---READ MOLECULES FROM STRING
+--READ MOLECULES FROM FILE OR STRING
+getMol2 fileName = do 
+        iFileHandle <- openFile (directory ++ fileName ++ extension) ReadMode
+        cont <- hGetContents iFileHandle
+        return $ readMol2 cont
+
 readMol2 s = map buildMolecule str where
     x = lines s
     str = splitToBlocks (filterLines x 0) ([], [], [])

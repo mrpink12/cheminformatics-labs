@@ -94,8 +94,6 @@ pNeg (Point3 x y z) = Point3 (-x) (-y) (-z)
 
 p <-> p' = p <+> (pNeg p')
         
-toVector3 (Point3 x y z) = Vector3 x y z
-
 toRadial p @ (Point3 x y z) = (alpha, (-beta), r)
         where
                 r = pDist p

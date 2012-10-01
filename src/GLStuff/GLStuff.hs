@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  TestGlut
+-- Module      :  GLStuff
 -- Copyright   :
 -- License     :  AllRightsReserved
 --

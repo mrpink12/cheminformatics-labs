@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------
 
 module Mol2Visualizer (
-    mol2Main
+    renderMolecule
 ) where
 
 import GHC.Float
@@ -31,18 +31,6 @@ import Garbage
 import Data.List
 import Geometry
 
-directory = "data/"
-extension = ".mol2"
-inputFile = "data/histidine.mol2"
---outputFile = "data/aspirin_out.mol2"
-
-mol2Main fileName = do 
-        iFileHandle <- openFile (directory ++ fileName ++ extension) ReadMode
-        cont <- hGetContents iFileHandle
-        let 
-                (mol:mols) = readMol2 cont
-        renderMolecule mol
-        return ()
         
 renderMolecule m @ (Molecule (Header molName _ _) atoms bonds) = do
         initialDisplayMode $= [DoubleBuffered, RGBMode, WithDepthBuffer]
@@ -103,6 +91,8 @@ renderBondPart a@(Atom _ _ atomType p@(Point3 x y z) _) direction = preservingMa
                 
 
 findAtom' id atoms = atoms !! (id - 1)
+
+toVector3 (Point3 x y z) = Vector3 x y z
 
 vdwRadius atomType
     | atomType == "H"  = 1.20
