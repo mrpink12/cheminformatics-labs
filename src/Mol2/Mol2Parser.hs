@@ -22,6 +22,7 @@ module Mol2Parser (
 
 import System.IO
 import Data.List
+import Garbage
 
 directory = "data/"
 extension = ".mol2"
@@ -35,7 +36,7 @@ _parse = tail . (map fst ) . (takeWhile (("", "") /= )) . _parse'
 
 data Point3 = Point3 {px, py, pz :: Float} deriving (Show)
 data Header = Header {molName, molSize, chargeType :: String} deriving Show
-data Atom = Atom {atomId :: Int, atomName, atomType :: String, point :: Point3, charge :: Float} deriving Show
+data Atom = Atom {atomId :: Int, atomName, atomType :: String, point :: Point3, strTail :: [String]} deriving Show
 data Bond = Bond {bondId, idX, idY :: Int, bondType :: String} deriving Show
 data Molecule = Molecule {molHeader :: Header, atoms :: [Atom], bonds :: [Bond]} deriving Show
 
@@ -61,9 +62,9 @@ showsHeader (Molecule (Header molName molSize chargeType) atoms bonds) =
         sizes   = (shows $ length atoms).(' ':).(shows $ length bonds).(showString " 0 0 0")
 
 showsAtoms as = (showString "@<TRIPOS>ATOM") : (showsAtomsBody as)
-showsAtomsBody ((Atom atomId atomName atomType point charge) : as) =
+showsAtomsBody ((Atom atomId atomName atomType point strTail) : as) =
     a : showsAtomsBody as where
-        a = (shows atomId).(' ':).(showString atomName).(' ':).(showsPoint3 point).(' ':).(showString atomType).(' ':).(shows charge)
+        a = (shows atomId).(' ':).(showString atomName).(' ':).(showsPoint3 point).(' ':).(showString atomType).(' ':).(showsStrings strTail)
 showsAtomsBody [] = []
 
 showsBonds bs = (showString "@<TRIPOS>BOND") : (showsBondsBody bs)
@@ -93,11 +94,10 @@ buildMolecule (h, a, b) = Molecule molHeader atoms bonds where
 parseHeader (molName:_:molSize:chargeType:_) = Header molName molSize chargeType
 
 parseAtoms (a:as) = atom : parseAtoms as where
-    (atomIdS:atomName:pxS:pyS:pzS:atomType:chargeS:_) = words a
+    (atomIdS:atomName:pxS:pyS:pzS:atomType:strTail) = words a
     atomId  = readI atomIdS
     point   = Point3 (readF pxS) (readF pyS) (readF pzS)
-    charge  = readF chargeS
-    atom    = Atom atomId atomName atomType point charge
+    atom    = Atom atomId atomName atomType point strTail
 parseAtoms [] = []
 
 parseBonds (b:bs) = bond : parseBonds bs where
@@ -109,27 +109,27 @@ parseBonds (b:bs) = bond : parseBonds bs where
 parseBonds [] = []
 
 readI = read::String->Int
-readF = read:: String->Float
+readF = read::String->Float
 
 --split to blocks
-splitToBlocks ("@<TRIPOS>MOLECULE":ls) ([], [], []) =
-    splitToBlocks nls (nh, [], []) where
-        (nh, nls) = getBlock ls []
-splitToBlocks ("@<TRIPOS>MOLECULE":ls) (h, a, b) =
-    (h, a, b) : splitToBlocks nls (nh, [], []) where
-        (nh, nls) = getBlock ls []
-splitToBlocks ("@<TRIPOS>ATOM":ls) (h, a, b) =
-    splitToBlocks nls (h, na++a, b) where
-        (na, nls) = getBlock ls []
-splitToBlocks ("@<TRIPOS>BOND":ls) (h, a, b) =
-    splitToBlocks nls (h, a, nb++b) where
-        (nb, nls) = getBlock ls []
+splitToBlocks ("@<TRIPOS>MOLECULE":ls) ([], [], []) = splitToBlocks nls (nh, [], []) 
+        where
+                (nh, nls) = getBlock ls []
+splitToBlocks ("@<TRIPOS>MOLECULE":ls) (h, a, b) = (h, a, b) : splitToBlocks nls (nh, [], []) 
+        where
+                (nh, nls) = getBlock ls []
+splitToBlocks ("@<TRIPOS>ATOM":ls) (h, [], b) = splitToBlocks nls (h, a, b) 
+        where
+                (a, nls) = getBlock ls []
+splitToBlocks ("@<TRIPOS>BOND":ls) (h, a, []) = splitToBlocks nls (h, a, b) 
+        where
+                (b, nls) = getBlock ls []
 splitToBlocks (l:ls) (h, a, b) = splitToBlocks ls (h, a, b)
 splitToBlocks [] ([], [], []) = []
 splitToBlocks [] (h, a, b) = (h, a, b):[]
 
 --parse block from "@%" to "@%"
-getBlock ((s @ ('@':_)) : ls) x = (reverse x, s:ls)
+getBlock (s@('@':_) : ls) x = (reverse x, s:ls)
 getBlock (s:ls) x = getBlock ls (s:x)
 getBlock [] x = (reverse x, [])
 

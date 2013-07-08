@@ -14,7 +14,7 @@
 
 module Garbage (
     genListIO, printRows, getArrayByRows,
-    getNuclSeqIO
+    getNuclSeqIO, showsStrings
 ) where
 
 import Array
@@ -49,6 +49,12 @@ getArrayByRows a = [[a ! (i, j) | j <- [0..nB]] | i <- [0..nA]]
         nA = (fst.snd.bounds) a
         nB = (snd.snd.bounds) a
 
+showsStrings (l:[])        = showString l
+showsStrings (l:ls)        = (showString l).(' ':).(showsStrings ls)
+        
+-- showsList::Show a => [a] -> Shows a
+-- showsList (l:ls)        = (shows l).(showsList ls)
+-- showsList []            = shows []
 ------------------Nucleotides------------------------
 getNuclSeqIO n = do
     arr <- genListIO n 4

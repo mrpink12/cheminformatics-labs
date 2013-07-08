@@ -5,17 +5,24 @@ where
 import Mol2Visualizer
 import Mol2Parser
 import Geometry
+import System.Environment
 
-superimpose m1 m2 (state:_) = do
+superimpose m1 m2 (state:args) = do
         case state of
                 "1" ->    do renderMolecules (m1:m2:[])
                 "2" ->    do centerMols (m1:m2:[]) >>= renderMolecules
-                "3" ->    do centerMols (m1:m2:[]) >>= fitMols >>= renderMolecules
+                "3" ->    do 
+                                let
+                                        (out:_) = args
+                                ms <- centerMols (m1:m2:[]) 
+                                ms <- fitMols ms 
+                                putMol2 out ms
+                                renderMolecules ms
 
 centerMols mols = do        
         return $ map (\(Molecule h atoms bonds) -> (Molecule h (center atoms) bonds)) mols
 
-center atoms = map (\(Atom id name atype p charge) -> (Atom id name atype (p <-> c) charge)) atoms
+center atoms = map (\(Atom id name atype p strTail) -> (Atom id name atype (p <-> c) strTail)) atoms
         where
                 c = centroid testWeightFunc atoms --vdwRadius atoms
 
@@ -30,7 +37,7 @@ rmsd' points1 points2 = sqrt $ s / len
 getPointsFromMol (Molecule _ atoms _) = map filterP atoms
 
 filterP (Atom _ _ _ p _) = p
-replacePoint (Atom id name atype p charge) p1 = (Atom id name atype p1 charge)
+replacePoint (Atom id name atype p strTail) p1 = (Atom id name atype p1 strTail)
 replacePointInMol (Molecule h atoms bonds) points = (Molecule h atoms' bonds)
         where
                 atoms' = map (\(a, p) -> replacePoint a p) $ zip atoms points

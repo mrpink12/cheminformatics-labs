@@ -70,7 +70,7 @@ keyboard vType pPos (Char '2') _ _ _ = do
         vType $= 2
 keyboard vType pPos c _ _ _ = keyForPos pPos c 10
 
-renderAtom a @ (Atom atomId atomName atomType point@(Point3 px py pz) charge) = preservingMatrix $ do
+renderAtom a @ (Atom atomId _ atomType point@(Point3 px py pz) _) = preservingMatrix $ do
         currentColor $= atomColor4 atomType
         let rad = vdwRadius atomType
         translate $ Vector3 px py pz
